@@ -22,7 +22,7 @@ pub extern "C" fn _start() -> ! {
             let char_offset = char_offset_within_line + line_offset;
             let color_offset = color_offset_within_line + line_offset;
 
-            *vga_buffer.offset(i as isize * 2) - byte;
+            *vga_buffer.offset(i as isize * 2) = byte;
             *vga_buffer.offset(i as isize * 2 + 1) = 0xb;
         }
     }
