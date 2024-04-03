@@ -7,25 +7,17 @@ use core::panic::PanicInfo;
 
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
+    println!("{}", _info);
+
     loop {}
 }
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
-    use core::fmt::Write;
+    println!("Hello, again!");
+    println!("A new number:\n{}", 42);
 
-    vga_buffer::WRITER
-        .lock()
-        .write_str("Hello, again!")
-        .unwrap();
+    panic!("I am panicing!");
 
-    write!(
-        vga_buffer::WRITER.lock(),
-        "\n Some numbers:\n{}\n{}",
-        42,
-        1.3337
-    )
-    .unwrap();
-
-    loop {}
+    // loop {}
 }
