@@ -2,6 +2,8 @@
 // allow dead code allows us to specify variants that are unused
 
 use core::fmt;
+use lazy_static::lazy_static;
+use spin::Mutex;
 use volatile::Volatile;
 
 #[allow(dead_code)]
@@ -123,16 +125,19 @@ impl fmt::Write for Writer {
     }
 }
 
-pub fn print_something() {
-    use core::fmt::Write;
-
-    let mut writer = Writer {
+lazy_static! {
+    // Mutex both grants threadsafe lock, but also makes this mutable
+    // DON"T use mut static (this makes the static globally mutable, which is super unsafe)
+    //
+    // ref is needed to make sure that ownership of the WRITER static remains in the kernel
+    // and doesn't get moved into other functions
+    pub static ref WRITER: Mutex<Writer> = Mutex::new(
+        Writer {
         column_positiion: 0,
         color_code: ColorCode::new(Color::Yellow, Color::Black),
+        // cannot use raw pointers in  statics
+        // the compiler cannot evaluate them at compile time
+        // need to use lazy-static in order to make this be evaluated at runtime
         buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
-    };
-
-    writer.write_byte(b'H');
-    writer.write_string("ello");
-    write!(writer, "The numbers are\n{} and\n{}", 42, 1.0 / 3.0).unwrap();
+    });
 }
