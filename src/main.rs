@@ -17,7 +17,5 @@ pub extern "C" fn _start() -> ! {
     println!("Hello, again!");
     println!("A new number:\n{}", 42);
 
-    panic!("I am panicing!");
-
-    // loop {}
+    loop {}
 }
